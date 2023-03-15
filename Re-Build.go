@@ -25,7 +25,7 @@ func (a thingy) Init() tea.Cmd { //what is this function for?
 }
 
 func (a thingy) Update(msg tea.Msg) (tea.Model, tea.Cmd) { //what are the many sets of parentheticals doing?
-	switch msg := msg.(type) { //there is the keyword msg in the parameters, in the first part of the switch, and in the second part. What is happening?
+	switch msg := msg.(type) {                             //there is the keyword msg in the parameters, in the first part of the switch, and in the second part. What is happening?
 	case tea.KeyMsg: //self-explanatory: if the tea.Msg is a key press, we'll switch through that
 		switch msg.String() { //that msg variable is evaluated as a String. this makes sense because we know it is a key press
 
@@ -56,9 +56,26 @@ func (a thingy) View() string { //ok. takes in model, than calls View, then retu
 	s := "What should we buy at the market?\n\n" //where does this get printed? how is it printed then never printed again?
 
 	//Iterate over choices (view)
-	for i, item := range a.items { //so new variable item, which holds
+	for i, item := range a.items { //so new variable item, which holds what? what is i for?
+
+		cursor := " " //a string showing what no cursor looks like
+		if a.cursor == i {
+			cursor = ">"
+		}
+
+		checked := " "                  //another string showing what no checked looks like
+		if _, ok := a.selected[i]; ok { //need to figure out what this if means
+			checked = "x" //what it looks like in selected form.
+		}
+
+		//render
+
+		s += fmt.Sprintf("%s [%s] %s\n", cursor, checked, item) //so this variable s from the top has the choices tacked on, every loop
 
 	}
+
+	s += "\nPress q to quit.\n"
+	return s
 }
 
 func main() {
