@@ -77,6 +77,7 @@ func (m board) View() string {
 			if m.cursor[l] == i {
 				cursor = ">" //cursor!
 			}
+			choice = choice
 
 			// Is this choice selected?
 			checked := " " //not selected
