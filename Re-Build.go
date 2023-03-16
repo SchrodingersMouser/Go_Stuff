@@ -40,7 +40,7 @@ func (a thingy) Update(msg tea.Msg) (tea.Model, tea.Cmd) { //what are the many s
 				a.cursor++
 			}
 		case "enter", " ":
-			_, ok := a.selected[a.cursor] //what is the _? so i think a variable is created representing the row the cursor is on
+			_, ok := a.selected[a.cursor] //what is the _? so I think a variable is created representing the row the cursor is on
 			if ok {                       //so a.selected @a.cursor is 1
 				delete(a.selected, a.cursor) //so delete is a function that takes in a map & key, then the key type. still don't understand
 			} else {
