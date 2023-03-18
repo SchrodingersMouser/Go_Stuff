@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
+	gloss "github.com/charmbracelet/lipgloss"
 	"os"
 )
 
@@ -13,6 +14,10 @@ type board struct { //why is this a struct?
 	selected [3][3]int //which items are selected. 1 = unselected, 2 = O, 3 = X
 	//	varName map keyTypes val Type
 }
+
+var xStyle = gloss.NewStyle().
+	Bold(true).
+	Foreground(gloss.Color("5"))
 
 func initialModel() board {
 	return board{
@@ -71,12 +76,15 @@ func (m board) View() string {
 		for i, choice := range h { //column
 
 			// Is the cursor pointing at this choice?
-			cursor := " " //no cursor
+			open := "[" //no cursor
+			close := "]"
 			if m.col == i && m.row == l {
-				cursor = ">" //cursor!
+				open = xStyle.Render("[") //cursor!
+				close = xStyle.Render("]")
 			}
 			choice = choice
-			cursor = cursor
+			open = open
+			close = close
 
 			// Is this choice selected?
 			checked := " " //not selected
@@ -85,8 +93,12 @@ func (m board) View() string {
 			}
 
 			// render the row
-			s += fmt.Sprintf("[%s] ", checked)
 
+			if m.col == i && m.row == l {
+				s += xStyle.Render(fmt.Sprintf("[%s]", checked))
+			} else {
+				s += fmt.Sprintf("[%s]", checked)
+			}
 		}
 		s += "\n"
 	}
