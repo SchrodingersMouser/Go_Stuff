@@ -7,9 +7,10 @@ import (
 )
 
 type board struct { //why is this a struct?
-	squares  [3][3]string             //the squares of the board
-	cursor   [4]int                   //the square the cursor is pointing at. index is row, value is column
-	selected map[int]map[int]struct{} //which items are selected. 1 = unselected, 2 = O, 3 = X
+	squares  [3][3]string //the squares of the board
+	col      int          //the square the cursor is pointing at. index is row, value is column
+	row      int
+	selected [3][3]int //which items are selected. 1 = unselected, 2 = O, 3 = X
 	//	varName map keyTypes val Type
 }
 
@@ -17,7 +18,7 @@ func initialModel() board {
 	return board{
 		squares: [3][3]string{{"_", "_", "_"}, {"_", "_", "_"}, {"_", "_", "_"}},
 		//squares:  "[ ] [ ] [ ]\n[ ] [ ] [ ]\n[ ] [ ] [ ]",
-		selected: make(map[int]map[int]struct{}),
+		selected: [3][3]int{{0, 0, 0}, {0, 0, 0}, {0, 0, 0}},
 	}
 }
 
@@ -34,33 +35,30 @@ func (m board) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "q":
 			return m, tea.Quit
 		case "up", "w":
-			if m.cursor[1] > 0 {
-				m.cursor[1]--
+			if m.row > 0 {
+				m.row--
 			}
 		case "down", "s":
-			if m.cursor[1] < len(m.cursor)-1 {
-				m.cursor[1]++
+			if m.row < 2 {
+				m.row++
 			}
 		case "right", "d":
-			if m.cursor[1] < len(m.cursor)-1 {
-				m.cursor[1]++
+			if m.col < 2 {
+				m.col++
 			}
 		case "left", "a":
-			if m.cursor[1] > 0 {
-				m.cursor[1]--
+			if m.col > 0 {
+				m.col--
 			}
 
 		case "enter", " ":
-			_, ok := m.selected[m.cursor[1]]
-			if ok {
-				delete(m.selected, m.cursor[1])
-			} else {
-				m.selected[m.cursor[1]][1] = struct{}{} //started work updating here
+			ok := m.selected[m.row][m.col]
+			if ok == 0 {
+				m.selected[m.row][m.col] = 1
 			}
 		}
 	}
 	return m, nil
-
 }
 
 func (m board) View() string {
@@ -74,24 +72,28 @@ func (m board) View() string {
 
 			// Is the cursor pointing at this choice?
 			cursor := " " //no cursor
-			if m.cursor[l] == i {
+			if m.col == i && m.row == l {
 				cursor = ">" //cursor!
 			}
 			choice = choice
+			cursor = cursor
 
 			// Is this choice selected?
 			checked := " " //not selected
-			if _, ok := m.selected[i]; ok {
+			if m.selected[l][i] == 1 {
 				checked = "x" //selected
 			}
 
 			// render the row
-			s += fmt.Sprintf("%s [%s]", cursor, checked)
+			s += fmt.Sprintf("[%s] ", checked)
+
 		}
+		s += "\n"
 	}
 	s += "\nPress q to quit.\n"
 	return s
 }
+
 func main() {
 	p := tea.NewProgram(initialModel())
 	if _, err := p.Run(); err != nil {
