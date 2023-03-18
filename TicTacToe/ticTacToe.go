@@ -83,8 +83,6 @@ func (m board) View() string {
 				close = xStyle.Render("]")
 			}
 			choice = choice
-			open = open
-			close = close
 
 			// Is this choice selected?
 			checked := " " //not selected
@@ -93,12 +91,8 @@ func (m board) View() string {
 			}
 
 			// render the row
+			s += fmt.Sprintf("%s%s%s ", open, checked, close)
 
-			if m.col == i && m.row == l {
-				s += xStyle.Render(fmt.Sprintf("[%s]", checked))
-			} else {
-				s += fmt.Sprintf("[%s]", checked)
-			}
 		}
 		s += "\n"
 	}
